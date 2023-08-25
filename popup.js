@@ -25,8 +25,25 @@ async function onWindowLoad() {
     return;
   }
 
-
-  console.log(result,'extension received')
+  const canvas = document.createElement('canvas');
+  canvas.width = 400;
+  canvas.height = 200;
+  document.body.appendChild(canvas);
+  
+  // Create a Chart object.
+  const chart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: ['Red', 'Green', 'Blue'],
+      datasets: [{
+        label: 'Number of Users',
+        data: [10, 20, 30]
+      }]
+    }
+  })
+  
+  // Render the chart.
+  chart.draw();
 
 }
 
