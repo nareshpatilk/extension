@@ -1,8 +1,5 @@
-
-
 const dropDown = document.getElementById('mySelect')
-
-
+let result;
 
 const chart = Highcharts.chart('container', {
   chart: {
@@ -55,10 +52,10 @@ const setChartData = (option)=>{
 
 }
 
-
 const changedOption = ()=>{
   setChartData(dropDown.value)
 }
+
 
 
 const onDOM = () => {
@@ -72,7 +69,114 @@ const onDOM = () => {
   return abc
 }
 
-let result;
+async function typeOfTable() {
+  const data = document.documentElement.innerHTML;
+  let finalResult = {};
+  let chartResult = {
+    headers: [],
+    mapRes: [],
+  };
+  let newResult;
+  const headers = [];
+  try {
+    const table = document.querySelector("table");
+    const thead = table.querySelectorAll("thead");
+    const th = table.querySelectorAll("th");
+    let i = 0;
+    for (const header of th) {
+      let val = header.innerText;
+      if (val.toString().length > 0) {
+        headers.push(val.trim());
+      } else {
+        headers.push(++i);
+      }
+    }
+    chartResult.headers = headers;
+    const tbody = table.querySelector("tbody");
+    const trow = tbody.querySelectorAll("tr");
+
+    const tabledata = [];
+    for (const row of trow) {
+      const tds = row.querySelectorAll("td");
+      const eachRow = [];
+      for (const td of tds) {
+        let val = td.innerText;
+        if (val.toString().length > 0) {
+          eachRow.push(val.trim());
+        } else {
+          eachRow.push("scrpaeeeeeeeeeeee");
+        }
+      }
+      tabledata.push(eachRow);
+    }
+
+    const manipulateData = {};
+
+    for (let header of headers) {
+      manipulateData[header] = [];
+    }
+
+    for (let l = 0; l < tabledata.length; l++) {
+      for (k = 0; k < tabledata[l].length; k++) {
+        let arr = manipulateData[headers[k]];
+        arr.push(tabledata[l][k]);
+        manipulateData[headers[k]] = arr;
+      }
+    }
+    console.log(manipulateData);
+    Object.entries(manipulateData).forEach((v, k) => {
+      let res = v.reduce((occurrences, item) => {
+        occurrences[item] = (occurrences[item] || 0) + 1;
+        return occurrences;
+      }, []);
+      finalResult[k] = res;
+    });
+
+    console.log("final 148 ", finalResult);
+    chartResult.mapRes.push(manipulateData);
+    newResult = manipulateData;
+  } catch (err) {
+    alert(err);
+    console.log(err);
+  }
+  return newResult;
+}
+
+
+async function scrapeHtmlCode() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  try {
+    [{ result }] = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: typeOfTable,
+    });
+  } catch (e) {
+    document.body.textContent = "Cannot access page";
+    return;
+  }
+  console.log("herere is the data = > ", result);
+
+  buildOptions()
+
+  setChartData(Object.keys(result)[0]);
+
+  // process the result
+}
+
+
+const buildOptions = ()=>{
+
+  
+  for (let h of Object.keys(result)) {
+    var option = document.createElement("option");
+    option.innerText = h;
+    option.value = h;
+    dropDown.append(option);
+  }
+
+}
+
 
 async function onWindowLoad() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -91,15 +195,7 @@ async function onWindowLoad() {
 
   setChartData(Object.keys(result)[0])
 
-  const selectElem = document.getElementById("mySelect");
-
-  for (let i of Object.keys(result)){
-    const element = document.createElement("option");
-    element.innerText =i;
-    element.value = i
-    selectElem.append(element);
-  }
-
+  buildOptions()
 
   console.log(chart.series,'sdn')
 
@@ -108,6 +204,7 @@ async function onWindowLoad() {
 
 
 document.getElementById('scrapeEmails').addEventListener("click", onWindowLoad);
+document.getElementById('scrapeData').addEventListener("click", scrapeHtmlCode);
 
 dropDown.addEventListener("change", changedOption);
 
