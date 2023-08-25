@@ -1,75 +1,147 @@
-function alertMan() {
-        alert('Ramya is beautiful girl');
-        writeAllTabUrlToConsole();
+async function scrapeHtmlCode() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  let result;
+  try {
+    [{ result }] = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: typeOfTable,
+    });
+  } catch (e) {
+    document.body.textContent = "Cannot access page";
+    return;
+  }
+
+console.log('herere is the data = > ' + result)
+  // process the result
+  Highcharts.chart("container", {
+    chart: {
+      plotBackgroundColor: null,
+
+      plotBorderWidth: null,
+
+      plotShadow: false,
+
+      type: "pie",
+    },
+
+    title: {
+      text: "Dynamic Dashboards",
+
+      align: "left",
+    },
+
+    tooltip: {
+      pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
+    },
+
+    accessibility: {
+      point: {
+        valueSuffix: "%",
+      },
+    },
+
+    plotOptions: {
+      pie: {
+        allowPointSelect: true,
+
+        cursor: "pointer",
+
+        dataLabels: {
+          enabled: true,
+
+          format: "<b>{point.name}</b>: {point.percentage:.1f} %",
+        },
+      },
+    },
+
+    series: [
+      {
+        name: "Brands",
+
+        colorByPoint: true,
+
+        data: result,
+      },
+    ],
+  });
 }
 
-async function writeAllTabUrlToConsole() {
-    try {
-        // Get all the tabs
-        const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-        
-        // Write all their URLs to the popup's console
-        for(let t of tabs){
-            alert(t.url);
-        }
+function normalTableExtract() {}
+
+async function typeOfTable() {
+  const data = document.documentElement.innerHTML;
+  let finalResult = new Map();
+  let chartResult = [];
+  const headers = [];
+  try {
+    const table = document.querySelector("table");
+    const thead = table.querySelectorAll("thead");
+    const th = table.querySelectorAll("th");
+    let i = 0;
+    for (const header of th) {
+      let val = header.innerText;
+      if (val.toString().length > 0) {
+        headers.push(val.trim());
+      } else {
+        headers.push(++i);
+      }
     }
-    catch(err) {
-        console.log('err' , err);
-        // Handle errors
-    }
-}
 
+    const tbody = table.querySelector("tbody");
+    const trow = tbody.querySelectorAll("tr");
 
-function onWindowLoad() {
-    // var message = document.querySelector('#mainForm');
-
-    // chrome.tabs.query({ active: true, currentWindow: true }).then(function (tabs) {
-    //     var activeTab = tabs[0];
-    //     var activeTabId = activeTab.id;
-
-    //     return chrome.scripting.executeScript({
-    //         target: { tabId: activeTabId },
-    //         // injectImmediately: true,  // uncomment this to make it execute straight away, other wise it will wait for document_idle
-    //         func: DOMtoString,
-    //         // args: ['body']  // you can use this to target what element to get the html for
-    //     });
-
-    // }).then(function (results) {
-    //     message.innerText = results[0].result;
-    // }).catch(function (error) {
-    //     message.innerText = 'There was an error injecting script : \n' + error.message;
-    // });
-    chrome.runtime.onMessage.addListener(function(request, sender) {
-        alert(request)
-        if (request.action == "getSource") {
-            this.pageSource = request.source;
-            var title = this.pageSource.match(/<title[^>]*>([^<]+)<\/title>/)[1];
-            alert(title)
+    const tabledata = [];
+    for (const row of trow) {
+      const tds = row.querySelectorAll("td");
+      const eachRow = [];
+      for (const td of tds) {
+        let val = td.innerText;
+        if (val.toString().length > 0) {
+          eachRow.push(val.trim());
+        } else {
+          eachRow.push("scrpaeeeeeeeeeeee");
         }
+      }
+      tabledata.push(eachRow);
+    }
+
+    const manipulateData = new Map();
+    let map1 = new Map();
+
+    for (let header of headers) {
+      manipulateData.set(header, []);
+    }
+
+    for (let l = 0; l < tabledata.length; l++) {
+      for (k = 0; k < tabledata[l].length; k++) {
+        let arr = manipulateData.get(headers[k]);
+        arr.push(tabledata[l][k]);
+        manipulateData.set(headers[k], arr);
+      }
+    }
+
+    
+
+    manipulateData.forEach((v, k) => {
+      let res = v.reduce((occurrences, item) => {
+        occurrences[item] = (occurrences[item] || 0) + 1;
+        return occurrences;
+      }, []);
+      finalResult.set(k, res);
     });
 
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-        console.log(tabs);
-        console.log(chrome.tabs);
-        chrome.scripting.executeScript(
-            tabs[0].id,
-            { code: 'var s = document.documentElement.outerHTML; chrome.runtime.sendMessage({action: "getSource", source: s});' }
-        );
+    const reduced = finalResult.get('Website');
+    const result = Object.keys(reduced).map((item) => {
+      return { name: item, y: reduced[item] };
     });
-    //alert(message);
+    //console.log(result);
+
+    chartResult = result;
+  } catch (err) {
+    alert(err);
+    console.log(err);
+  }
+  return chartResult;
 }
 
-// window.onload = onWindowLoad;
-
-// function DOMtoString(selector) {
-//     if (selector) {
-//         selector = document.querySelector(selector);
-//         if (!selector) return "ERROR: querySelector failed to find node"
-//     } else {
-//         selector = document.documentElement;
-//     }
-//     return selector.outerHTML;
-// }
-
-
-document.getElementById('scrapeEmails').addEventListener("click", onWindowLoad);
+document.getElementById("scrapeData").addEventListener("click", scrapeHtmlCode);
