@@ -1,19 +1,82 @@
 
+
+const dropDown = document.getElementById('mySelect')
+
+
+
+const chart = Highcharts.chart('container', {
+  chart: {
+    plotBackgroundColor: null,
+    plotBorderWidth: null,
+    plotShadow: false,
+    type: 'pie'
+  },
+  title: {
+    text: 'Dynamic Dashboards',
+    align: 'left'
+  },
+  tooltip: {
+    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+  },
+  accessibility: {
+    point: {
+      valueSuffix: '%'
+    }
+  },
+  plotOptions: {
+    pie: {
+      allowPointSelect: true,
+      cursor: 'pointer',
+      dataLabels: {
+        enabled: true,
+        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+      }
+    }
+  },
+  series: [{
+    name: 'Brands',
+    colorByPoint: true,
+    data: []
+  }]
+});
+
+
+const setChartData = (option)=>{
+  let obj = result[option].reduce((acc, curr) => {
+    const currentDict = acc.find((dict) => dict.name === curr);
+    if (currentDict) {
+      currentDict.y += 1;
+    } else {
+      acc.push({ name: curr, y: 1 });
+    }
+    return acc;
+  }, []);
+  chart.series[0].setData(obj)
+
+}
+
+
+const changedOption = ()=>{
+  setChartData(dropDown.value)
+}
+
+
 const onDOM = () => {
 
   let abc = {}
   //Process the datatype and send it extension, need to find a proper way to create a data structure
   Array.from(document.getElementsByClassName("ag-cell-value")).forEach(x => {
-    abc[x.getAttribute('col-id')] = Array.isArray(abc[x.getAttribute('col-id')]) ? [...abc[x.getAttribute('col-id')],x.innerHTML]:[x.innerHTML]
+    abc[x.getAttribute('col-id')] = Array.isArray(abc[x.getAttribute('col-id')]) ? [...abc[x.getAttribute('col-id')], x.textContent] : [x.textContent]
   })
 
   return abc
 }
 
+let result;
 
 async function onWindowLoad() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  let result;
+
   try {
     [{ result }] = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
@@ -24,27 +87,27 @@ async function onWindowLoad() {
     document.body.textContent = 'Cannot access page';
     return;
   }
+  console.log(result)
 
-  const canvas = document.createElement('canvas');
-  canvas.width = 400;
-  canvas.height = 200;
-  document.body.appendChild(canvas);
-  
-  // Create a Chart object.
-  const chart = new Chart(canvas, {
-    type: 'bar',
-    data: {
-      labels: ['Red', 'Green', 'Blue'],
-      datasets: [{
-        label: 'Number of Users',
-        data: [10, 20, 30]
-      }]
-    }
-  })
-  
-  // Render the chart.
-  chart.draw();
+  setChartData(Object.keys(result)[0])
+
+  const selectElem = document.getElementById("mySelect");
+
+  for (let i of Object.keys(result)){
+    const element = document.createElement("option");
+    element.innerText =i;
+    element.value = i
+    selectElem.append(element);
+  }
+
+
+  console.log(chart.series,'sdn')
+
 
 }
 
+
 document.getElementById('scrapeEmails').addEventListener("click", onWindowLoad);
+
+dropDown.addEventListener("change", changedOption);
+
