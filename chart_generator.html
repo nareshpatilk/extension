@@ -10,8 +10,18 @@
 </head>
 
 <body>
-  <h1>Chart Extracter</h1>
+
+  <div class="center">
+    <h1>Chart Extracter</h1>
+  </div>
   <button id="scrapeData">Generate Chart for Normal Table</button>
+  <hr>
+  <div>
+    <label>Select a column from drop down to view graph</label>
+    <select id="typeColumn"></select>
+  </div>
+
+  <hr>
   <figure class="highcharts-figure">
     <div id="container"></div>
   </figure>
