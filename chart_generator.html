@@ -1,25 +1,26 @@
 <html>
-  <head>
-    <script src="./unpkg/chart.js"></script>
 
-    <style>
-      .highcharts-figure {
-    min-width: 500px;
-}
+<head>
+  <script src="./unpkg/chart.js"></script>
+  <link rel="stylesheet" href="./style.css">
+</head>
 
-    </style>
-  </head>
-  <body>
-    <h1>Chart Generator</h1>
-    <!-- <button id="scrapeData"> Get Chart Data</button>
-    <button id="scrapeEmails"> Get AG Grid Data</button> -->
+<body class="bodyColor">
+  <div class="btn-container">
+    <button id="dynamicChart" class="btn success">Generate Chart</button>
+    <select id="mySelect" style="display: none;" class="button2">Choose dropdown</select>
+  </div>
 
-    <button id="dynamicChart">Generate Chart </button>
-    <select id="mySelect">
-    </select>
+  <div id="chart" style="display: none;">
     <figure class="highcharts-figure">
       <div id="container"></div>
     </figure>
-    <script src="popup.js"></script>
-  </body>
+    <figure class="highcharts-figure">
+      <div id="barChart"></div>
+    </figure>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+
 </html>

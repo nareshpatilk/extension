@@ -1,11 +1,14 @@
 {
     "manifest_version": 3,
-    "name": "Hello Extensions",
-    "description": "Base Level Extension",
-    "version": "1.0",
+    "name": "Dynamic Chart Extensions",
+    "description": "Visualize your table into charts",
+    "icons":{
+      "16":"dynamic_chart_logo.png"
+    },
+    "version": "1.0.0.0",
     "action": {
       "default_popup": "chart_generator.html",
-      "default_icon": "hello_extensions.png"
+      "default_icon": "dynamic_chart_logo.png"
     },
     "web_accessible_resources": [
       {
