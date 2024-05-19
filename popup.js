@@ -39,6 +39,19 @@ const pieChart = Highcharts.chart("container", {
       data: [],
     },
   ],
+  exporting: {
+    enabled: true, // Enable exporting module
+    buttons: {
+      contextButton: {
+        menuItems: [
+          "downloadPNG",
+          "downloadJPEG",
+          "downloadPDF",
+          "downloadSVG",
+        ], // Specify file formats to download
+      },
+    },
+  },
 });
 
 const barChart = Highcharts.chart("barChart", {
@@ -85,9 +98,23 @@ const barChart = Highcharts.chart("barChart", {
       data: [],
     },
   ],
+  exporting: {
+    enabled: true, // Enable exporting module
+    buttons: {
+      contextButton: {
+        menuItems: [
+          "downloadPNG",
+          "downloadJPEG",
+          "downloadPDF",
+          "downloadSVG",
+        ], // Specify file formats to download
+      },
+    },
+  },
 });
 
 const setChartData = (option) => {
+  console.log(option);
   let obj = result[option].reduce((acc, curr) => {
     const currentDict = acc.find((dict) => dict.name === curr);
     if (currentDict) {
@@ -146,11 +173,13 @@ async function dynamicCode() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
   try {
+    console.log("i started");
     [{ result }] = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: toKnowType,
     });
   } catch (e) {
+    console.log(e);
     document.body.textContent = "Cannot access page";
     return;
   }
@@ -162,7 +191,7 @@ async function dynamicCode() {
   // process the result
 }
 
-const toKnowType = () => {
+const toKnowType = async () => {
   const onDOM = () => {
     let abc = {};
     //Process the datatype and send it extension, need to find a proper way to create a data structure
@@ -175,7 +204,6 @@ const toKnowType = () => {
           : [x.textContent];
       }
     );
-
     return abc;
   };
 
@@ -240,7 +268,6 @@ const toKnowType = () => {
           manipulateData[headers[k]] = arr;
         }
       }
-      console.log(manipulateData);
       Object.entries(manipulateData).forEach((v, k) => {
         let res = v.reduce((occurrences, item) => {
           occurrences[item] = (occurrences[item] || 0) + 1;
@@ -249,7 +276,6 @@ const toKnowType = () => {
         finalResult[k] = res;
       });
 
-      console.log("final 148 ", finalResult);
       chartResult.mapRes.push(manipulateData);
       newResult = manipulateData;
     } catch (err) {
@@ -259,12 +285,86 @@ const toKnowType = () => {
     return newResult;
   }
 
+  async function slickGrid() {
+    let chartResult = {
+      headers: [],
+      mapRes: [],
+    };
+    let finalres = {};
+    const headers = [];
+    const slickHeaderColumns = document.querySelectorAll(
+      ".slick-header-columns"
+    )[0];
+
+    if (slickHeaderColumns) {
+      const ce = slickHeaderColumns.querySelectorAll("*");
+
+      for (const c of ce) {
+        if (c.classList.contains("slick-header-column")) {
+          const cn = c.textContent.trim();
+          if (cn.length > 0) {
+            headers.push(cn.replace("\n\t\t\t\t", ""));
+          }
+        }
+      }
+    }
+    chartResult.headers = headers;
+    const slickViewport = document.querySelector(".slick-viewport");
+    const slickdata = [];
+
+    if (slickViewport) {
+      const rows = slickViewport.querySelectorAll(".slick-row");
+
+      for (const row of rows) {
+        let i = 0;
+        const cells = row.querySelectorAll(".slick-cell");
+
+        const dataval = {};
+        for (let i = 0; i < headers.length; i++) {
+          dataval[headers[i]] = "";
+        }
+
+        for (const cell of cells) {
+          if (!cell.className.toString().includes("slick-cell-checkboxse")) {
+            const cellvalue = cell.textContent.trim();
+            dataval[headers[i]] = cellvalue;
+            i++;
+          }
+        }
+        slickdata.push(dataval);
+      }
+    }
+
+    for (let i = 0; i < headers.length; i++) {
+      finalres[headers[i]] = [];
+    }
+
+    let j = 0;
+    for (let he of headers) {
+      for (let i = 0; i < slickdata.length; i++) {
+        const key = Object.keys(slickdata[i])[j];
+
+        if (key === he) {
+          finalres[he].push(slickdata[i][key]);
+        }
+      }
+      j++;
+    }
+    console.log(finalres, "1222", finalres);
+    return finalres;
+  }
+
   if (
     Array.from(document.getElementsByClassName("ag-cell-value"))?.length > 0
   ) {
-    return onDOM();
+    return await onDOM();
+  } else if (
+    Array.from(document.getElementsByClassName("slick-header-columns"))
+      ?.length > 0
+  ) {
+    return await slickGrid();
   } else {
-    return typeOfTable();
+    return await typeOfTable();
   }
 };
 
