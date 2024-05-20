@@ -41,16 +41,6 @@ const pieChart = Highcharts.chart("container", {
   ],
   exporting: {
     enabled: true, // Enable exporting module
-    buttons: {
-      contextButton: {
-        menuItems: [
-          "downloadPNG",
-          "downloadJPEG",
-          "downloadPDF",
-          "downloadSVG",
-        ], // Specify file formats to download
-      },
-    },
   },
 });
 
@@ -100,16 +90,6 @@ const barChart = Highcharts.chart("barChart", {
   ],
   exporting: {
     enabled: true, // Enable exporting module
-    buttons: {
-      contextButton: {
-        menuItems: [
-          "downloadPNG",
-          "downloadJPEG",
-          "downloadPDF",
-          "downloadSVG",
-        ], // Specify file formats to download
-      },
-    },
   },
 });
 
