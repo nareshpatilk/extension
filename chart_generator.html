@@ -1,0 +1,33 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./unpkg/map.js"></script>
+  <script type="module" src="./unpkg/offline-export.js"></script>
+
+
+</head>
+
+<body class="bodyColor">
+  <div class="btn-container">
+    <button id="dynamicChart" class="btn success">Generate Chart</button>
+    <select id="mySelect" style="display: none;" class="button2">Choose dropdown</select>
+  </div>
+
+  <div id="chart" style="display: none;">
+    <figure class="highcharts-figure">
+      <div id="pieChart"></div>
+    </figure>
+    <figure class="highcharts-figure">
+      <div id="barChart"></div>
+    </figure>
+    <figure class="highcharts-figure">
+      <div id="mapChart"></div>
+    </figure>
+  </div>
+
+  <script type="module" src="popup.js" defer></script>
+
+</body>
+
+</html>
