@@ -1,25 +1,26 @@
 {
-    "manifest_version": 3,
-    "name": "Hello Extensions",
-    "description": "Base Level Extension",
-    "version": "1.0",
-    "action": {
-      "default_popup": "hello.html",
-      "default_icon": "hello_extensions.png"
-    },
-    "web_accessible_resources": [
-      {
-        "resources": ["_favicon/*",  "data/mapdata.json",
-        "data/toplgy.json"],
-        "matches": ["<all_urls>"]
-      }
-    ],
-    "permissions": [
-      "tabs",
-      "scripting",
-      "activeTab"
-    ]
-    
-  }
-
+  "manifest_version": 3,
+  "name": "Dynamic Chart Extensions",
+  "description": "Visualize your table into charts",
+  "icons":{
+    "16":"dynamic_chart_logo.png"
+  },
+  "version": "1.0.0.0",
+  "action": {
+    "default_popup": "chart_generator.html",
+    "default_icon": "dynamic_chart_logo.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["_favicon/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "permissions": [
+    "tabs",
+    "scripting",
+    "activeTab"
+  ]
   
+}
+

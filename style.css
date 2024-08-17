@@ -1,0 +1,63 @@
+.bodyColor {
+    background-color: blanchedalmond;
+    min-width: 115px;
+  }
+
+  .highcharts-figure {
+    min-width: 500px;
+    min-height: 500px;
+  }
+
+  .center {
+    margin: auto;
+    width: 80%;
+    border: 0px solid black;
+    padding: 10px;
+    background-color: cornflowerblue;
+    text-align: center;
+  }
+
+  .btn {
+    border: none;
+    /* Remove borders */
+    color: white;
+    /* Add a text color */
+    padding: 14px 28px;
+    /* Add some padding */
+    cursor: pointer;
+    /* Add a pointer cursor on mouse-over */
+  }
+
+  .success {
+    background-color: #04AA6D;
+  }
+
+  /* Green */
+  .success:hover {
+    background-color: #46a049;
+  }
+
+  .button2 {
+    background-color: white;
+    color: black;
+    border: 2px solid #008CBA;
+    padding: 14px 28px;
+  }
+
+  .button2:hover {
+    background-color: #008CBA;
+    color: white;
+  }
+
+  .btn-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* Two columns of equal width */
+    gap: 5px;
+    /* Add some space between buttons */
+  }
+
+  .btn {
+    grid-column: span 1;
+    /* Make each button occupy one column */
+  }

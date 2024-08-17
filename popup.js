@@ -1,5 +1,7 @@
-<<<<<<< Updated upstream
-=======
+const dropDown = document.getElementById("mySelect");
+const dynamicChart = document.getElementById("dynamicChart");
+let result;
+
 let topology = {
   type: "Topology",
   objects: {
@@ -16270,9 +16272,47 @@ const updatedCountryMap = countryMaster.map((country) => ({
   z: "", // Add the new 'z' property with a value of your choice
 }));
 
-const dropDown = document.getElementById("mySelect");
-const dynamicChart = document.getElementById("dynamicChart");
-let result;
+const pieChart = Highcharts.chart("pieChart", {
+  chart: {
+    plotBackgroundColor: null,
+    plotBorderWidth: null,
+    plotShadow: false,
+    type: "pie",
+  },
+  title: {
+    text: "Pie Chart",
+    align: "left",
+  },
+  tooltip: {
+    pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
+  },
+  accessibility: {
+    enabled: false,
+    point: {
+      valueSuffix: "%",
+    },
+  },
+  plotOptions: {
+    pie: {
+      allowPointSelect: true,
+      cursor: "pointer",
+      dataLabels: {
+        enabled: true,
+        format: "<b>{point.name}</b>: {point.percentage:.1f} %",
+      },
+    },
+  },
+  series: [
+    {
+      name: "Brands",
+      colorByPoint: true,
+      data: [],
+    },
+  ],
+  exporting: {
+    enabled: true, // Enable exporting module
+  },
+});
 
 const barChart = Highcharts.chart("barChart", {
   chart: {
@@ -16314,48 +16354,6 @@ const barChart = Highcharts.chart("barChart", {
   series: [
     {
       name: "Browsers",
-      colorByPoint: true,
-      data: [],
-    },
-  ],
-  exporting: {
-    enabled: true, // Enable exporting module
-  },
-});
-
-const pieChart = Highcharts.chart("pieChart", {
-  chart: {
-    plotBackgroundColor: null,
-    plotBorderWidth: null,
-    plotShadow: false,
-    type: "pie",
-  },
-  title: {
-    text: "Pie Chart",
-    align: "left",
-  },
-  tooltip: {
-    pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
-  },
-  accessibility: {
-    enabled: false,
-    point: {
-      valueSuffix: "%",
-    },
-  },
-  plotOptions: {
-    pie: {
-      allowPointSelect: true,
-      cursor: "pointer",
-      dataLabels: {
-        enabled: true,
-        format: "<b>{point.name}</b>: {point.percentage:.1f} %",
-      },
-    },
-  },
-  series: [
-    {
-      name: "Brands",
       colorByPoint: true,
       data: [],
     },
@@ -16460,6 +16458,7 @@ const mapGraph = (obj) => {
   mapChart.series[1]?.setData(countrArr);
 }
 
+
 const setChartData = (option) => {
   console.log(option);
   let obj = result[option].reduce((acc, curr) => {
@@ -16476,24 +16475,22 @@ const setChartData = (option) => {
     return acc;
   }, []);
 
-  console.log(result);
-  console.log("obj", obj);
-  pieChart.series[0]?.setData(obj);
+  console.log(obj);
+  pieChart.series[0].setData(obj);
   barChart.series[0].setData(obj);
   if (option.trim().toLowerCase() === "country" 
-|| option.trim().toLowerCase() === "location") {
-    mapGraph(obj);
-  }
+  || option.trim().toLowerCase() === "location") {
+      mapGraph(obj);
+    }
 };
 
 const changedOption = () => {
   setChartData(dropDown.value);
 };
 
->>>>>>> Stashed changes
 async function scrapeHtmlCode() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  let result;
+
   try {
     [{ result }] = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
@@ -16503,143 +16500,51 @@ async function scrapeHtmlCode() {
     document.body.textContent = "Cannot access page";
     return;
   }
+  console.log("herere is the data = > ", result);
 
-console.log('herere is the data = > ' + result)
+  buildOptions();
+
+  setChartData(Object.keys(result)[0]);
+
   // process the result
-  Highcharts.chart("container", {
-    chart: {
-      plotBackgroundColor: null,
-
-      plotBorderWidth: null,
-
-      plotShadow: false,
-
-      type: "pie",
-    },
-
-    title: {
-      text: "Dynamic Dashboards",
-
-      align: "left",
-    },
-
-    tooltip: {
-      pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
-    },
-
-    accessibility: {
-      point: {
-        valueSuffix: "%",
-      },
-    },
-
-    plotOptions: {
-      pie: {
-        allowPointSelect: true,
-
-        cursor: "pointer",
-
-        dataLabels: {
-          enabled: true,
-
-          format: "<b>{point.name}</b>: {point.percentage:.1f} %",
-        },
-      },
-    },
-
-    series: [
-      {
-        name: "Brands",
-
-        colorByPoint: true,
-
-        data: result,
-      },
-    ],
-  });
 }
 
-function normalTableExtract() {}
-
-async function typeOfTable() {
-  const data = document.documentElement.innerHTML;
-  let finalResult = new Map();
-  let chartResult = [];
-  const headers = [];
-  try {
-    const table = document.querySelector("table");
-    const thead = table.querySelectorAll("thead");
-    const th = table.querySelectorAll("th");
-    let i = 0;
-    for (const header of th) {
-      let val = header.innerText;
-      if (val.toString().length > 0) {
-        headers.push(val.trim());
-      } else {
-        headers.push(++i);
-      }
-    }
-
-    const tbody = table.querySelector("tbody");
-    const trow = tbody.querySelectorAll("tr");
-
-    const tabledata = [];
-    for (const row of trow) {
-      const tds = row.querySelectorAll("td");
-      const eachRow = [];
-      for (const td of tds) {
-        let val = td.innerText;
-        if (val.toString().length > 0) {
-          eachRow.push(val.trim());
-        } else {
-          eachRow.push("scrpaeeeeeeeeeeee");
-        }
-      }
-      tabledata.push(eachRow);
-    }
-
-    const manipulateData = new Map();
-    let map1 = new Map();
-
-    for (let header of headers) {
-      manipulateData.set(header, []);
-    }
-
-    for (let l = 0; l < tabledata.length; l++) {
-      for (k = 0; k < tabledata[l].length; k++) {
-        let arr = manipulateData.get(headers[k]);
-        arr.push(tabledata[l][k]);
-        manipulateData.set(headers[k], arr);
-      }
-    }
-
-    
-
-    manipulateData.forEach((v, k) => {
-      let res = v.reduce((occurrences, item) => {
-        occurrences[item] = (occurrences[item] || 0) + 1;
-        return occurrences;
-      }, []);
-      finalResult.set(k, res);
-    });
-
-    const reduced = finalResult.get('Website');
-    const result = Object.keys(reduced).map((item) => {
-      return { name: item, y: reduced[item] };
-    });
-    //console.log(result);
-
-    chartResult = result;
-  } catch (err) {
-    alert(err);
-    console.log(err);
+async function dynamicCode() {
+  var chartDisplay = document.getElementById("chart");
+  if (chartDisplay.style.display === "none") {
+    chartDisplay.style.display = "block";
+  } else {
+    chartDisplay.style.display = "none";
   }
-  return chartResult;
+
+  var dynamicSelect = document.getElementById("mySelect");
+  if (dynamicSelect.style.display === "none") {
+    dynamicSelect.style.display = "block";
+  } else {
+    dynamicSelect.style.display = "none";
+  }
+
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  try {
+    console.log("i started");
+    [{ result }] = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: toKnowType,
+    });
+  } catch (e) {
+    console.log(e);
+    document.body.textContent = "Cannot access page";
+    return;
+  }
+  console.log("herere is the data = > ", result);
+
+  setChartData(Object.keys(result)[0]);
+  buildOptions();
+
+  // process the result
 }
 
-<<<<<<< Updated upstream
-document.getElementById("scrapeData").addEventListener("click", scrapeHtmlCode);
-=======
 const toKnowType = async () => {
   const onDOM = () => {
     let abc = {};
@@ -16831,27 +16736,5 @@ const buildOptions = () => {
   }
 };
 
-function hasKeyCaseInsensitive(obj, key) {
-  // Normalize the key to lowercase for comparison
-  const normalizedKey = key.toLowerCase();
-
-  // Check if the object is an actual object
-  if (typeof obj !== "object" || obj === null) {
-    return false;
-  }
-
-  // Iterate through the keys of the object
-  for (const objKey in obj) {
-    // Check if the key matches the normalized key (case-insensitive)
-    if (objKey.trim().toLowerCase() === normalizedKey) {
-      return true;
-    }
-  }
-
-  // If no matching key was found, return false
-  return false;
-}
-
 dynamicChart.addEventListener("click", dynamicCode);
 dropDown.addEventListener("change", changedOption);
->>>>>>> Stashed changes
