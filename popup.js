@@ -16379,7 +16379,7 @@ const mapGraph = (obj) => {
 
     accessibility: {
       enabled: false,
-      description:''
+      description: "",
     },
 
     legend: {
@@ -16456,8 +16456,7 @@ const mapGraph = (obj) => {
   });
   console.log("i cam here bro", countrArr);
   mapChart.series[1]?.setData(countrArr);
-}
-
+};
 
 const setChartData = (option) => {
   console.log(option);
@@ -16478,10 +16477,12 @@ const setChartData = (option) => {
   console.log(obj);
   pieChart.series[0].setData(obj);
   barChart.series[0].setData(obj);
-  if (option.trim().toLowerCase() === "country" 
-  || option.trim().toLowerCase() === "location") {
-      mapGraph(obj);
-    }
+  if (
+    option.trim().toLowerCase() === "country" ||
+    option.trim().toLowerCase() === "location"
+  ) {
+    mapGraph(obj);
+  }
 };
 
 const changedOption = () => {
