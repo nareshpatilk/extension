@@ -5,7 +5,7 @@
   "icons":{
     "16":"dynamic_chart_logo.png"
   },
-  "version": "1.0.0.0",
+  "version": "1.0.0.2",
   "action": {
     "default_popup": "chart_generator.html",
     "default_icon": "dynamic_chart_logo.png"
